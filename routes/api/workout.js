@@ -11,7 +11,7 @@ const checkObjectId = require('../../middleware/checkObjectId');
 const User = require('../../models/User');
 const Workout = require('../../models/Workout');
 
-// @route    POST api/posts
+// @route    POST api/workout
 // @desc     Create a workout
 // @access   Private
 
@@ -36,7 +36,7 @@ router.post(
     try {
       const user = await User.findById(req.user.id).select('-password');
       const newWorkout = new Workout({
-        workout_name: req.body.text,
+        workout_name: name,
         aprox_time: 10.0,
         level: 'hard',
         type: 'upper-body',

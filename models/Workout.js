@@ -40,7 +40,7 @@ const WorkoutSchema = new mongoose.Schema({
                 additionalItems: true,
                 uniqueItems: true,
                 items: {
-                  type: string,
+                  type: 'string',
                   displayName: 'exercise_id'
                 }
               }

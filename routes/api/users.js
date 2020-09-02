@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
@@ -28,7 +27,9 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    console.log('not errors');
     const { name, email, password } = req.body;
+    console.log(req.body, 'body');
 
     try {
       let user = await User.findOne({ email });
@@ -39,22 +40,11 @@ router.post(
           .json({ errors: [{ msg: 'User already exists' }] });
       }
 
-      const avatar = normalize(
-        gravatar.url(email, {
-          s: '200',
-          r: 'pg',
-          d: 'mm'
-        }),
-        { forceHttps: true }
-      );
-
       user = new User({
         name,
         email,
-        avatar,
         password
       });
-
       const salt = await bcrypt.genSalt(10);
 
       user.password = await bcrypt.hash(password, salt);
