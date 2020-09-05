@@ -27,9 +27,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    console.log('not errors');
     const { name, email, password } = req.body;
-    console.log(req.body, 'body');
 
     try {
       let user = await User.findOne({ email });
@@ -37,7 +35,7 @@ router.post(
       if (user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: 'User already exists' }] });
+          .json({ errors: [{ msg: 'Email already exists in db' }] });
       }
 
       user = new User({

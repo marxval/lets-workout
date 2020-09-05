@@ -1,15 +1,11 @@
 const express = require('express');
-const axios = require('axios');
-const config = require('config');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
-// bring in normalize to give us a proper url, regardless of what user entered
-const normalize = require('normalize-url');
-const checkObjectId = require('../../middleware/checkObjectId');
 
 const User = require('../../models/User');
 const Workout = require('../../models/Workout');
+const UserActivity = require('../../models/UserActivity');
 
 // @route    POST api/workout
 // @desc     Create a workout
@@ -45,6 +41,31 @@ router.post(
       });
       const workout = await newWorkout.save();
       res.json(workout);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+router.post(
+  '/wokout',
+  [auth, [check('workout_id', 'workout_id is required').not().isEmpty()]],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { user_id, workout_id } = req.body;
+
+    try {
+      const newUserActivity = new UserActivity({
+        user_id: req.user_id,
+        workout_id: workout_id
+      });
+      const userWorkout = await newUserActivity.save();
+      res.json(userWorkout);
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
