@@ -19,22 +19,15 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const name = req.body.name;
-
-    const newSets = [
-      {
-        rest_set: 10,
-        exercises: [{ rest_exercise: 10, exercises_id: ['999989', '878708'] }]
-      }
-    ];
+    const { workout_name, aprox_time, level, type, sets } = req.body;
 
     try {
       const newWorkout = new Workout({
-        workout_name: name,
-        aprox_time: 10.0,
-        level: 'hard',
-        type: 'upper-body',
-        sets: newSets,
+        workout_name,
+        aprox_time,
+        level,
+        type,
+        sets,
         user_id: req.user.id
       });
       const workout = await newWorkout.save();
@@ -77,7 +70,7 @@ router.post(
 );
 
 // @route    GET api/workout/activity
-// @desc     Get all workouts by user_id
+// @desc     Get all workouts done by the user
 // @access   Private
 
 router.get('/activity', [auth], async (req, res) => {
@@ -95,4 +88,23 @@ router.get('/activity', [auth], async (req, res) => {
   }
 });
 
+// @route    GET api/workout/activity/:id
+// @desc     Get all workouts done by a user_id
+// @access   Private
+
+router.get('/activity/:id', [auth], async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+
+    res.json(post);
+  } catch (err) {
+    console.error(err.message);
+
+    res.status(500).send('Server Error');
+  }
+});
 module.exports = router;
