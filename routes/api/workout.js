@@ -19,8 +19,7 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
-    const { name } = req.body;
+    const name = req.body.name;
 
     const newSets = [
       {
@@ -30,7 +29,6 @@ router.post(
     ];
 
     try {
-      const user = await User.findById(req.user.id).select('-password');
       const newWorkout = new Workout({
         workout_name: name,
         aprox_time: 10.0,
@@ -48,8 +46,12 @@ router.post(
   }
 );
 
+// @route    POST api/workout/activity
+// @desc     Register a user workout-activity
+// @access   Private
+
 router.post(
-  '/wokout',
+  '/activity',
   [auth, [check('workout_id', 'workout_id is required').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
@@ -57,11 +59,12 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { user_id, workout_id } = req.body;
+    const { workout_id } = req.body;
+    console.log(req.userid);
 
     try {
       const newUserActivity = new UserActivity({
-        user_id: req.user_id,
+        user_id: req.user.id,
         workout_id: workout_id
       });
       const userWorkout = await newUserActivity.save();
@@ -72,5 +75,24 @@ router.post(
     }
   }
 );
+
+// @route    GET api/workout/activity
+// @desc     Get all workouts by user_id
+// @access   Private
+
+router.get('/activity', [auth], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  try {
+    const user_workouts = await UserActivity.find(req.user.id);
+    console.log(user_workouts);
+    res.json(user_workouts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;
