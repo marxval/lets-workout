@@ -94,7 +94,7 @@ router.get('/activity', [auth], async (req, res) => {
 
 router.get('/activity/:id', [auth], async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await User.findById(req.params.id);
 
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
@@ -103,7 +103,6 @@ router.get('/activity/:id', [auth], async (req, res) => {
     res.json(post);
   } catch (err) {
     console.error(err.message);
-
     res.status(500).send('Server Error');
   }
 });
