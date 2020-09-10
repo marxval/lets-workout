@@ -94,13 +94,12 @@ router.get('/activity', [auth], async (req, res) => {
 
 router.get('/activity/:id', [auth], async (req, res) => {
   try {
-    const post = await User.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ msg: 'Post not found' });
-    }
-
-    res.json(post);
+    const user = await User.findById(req.params.id);
+    // if (!user.workout_privacy) {
+    //   return res.json([]);
+    // }
+    const user_workouts = await UserActivity.find({ user_id: req.params.id });
+    res.json(user_workouts);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
