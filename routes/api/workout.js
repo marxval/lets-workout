@@ -86,7 +86,7 @@ router.get('/activity', [auth], async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const user_workouts = await UserActivity.find(req.user.id);
+    const user_workouts = await UserActivity.find({ user_id: req.user.id });
     console.log(user_workouts);
     res.json(user_workouts);
   } catch (err) {
